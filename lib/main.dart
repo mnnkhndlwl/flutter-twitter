@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:twitter_clone/features/auth/view/login_view.dart';
+import 'package:twitter_clone/features/auth/view/signup_view.dart';
 import 'package:twitter_clone/theme/theme.dart';
 
 void main() async {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.theme,
-      home: LoginView(),
+      home: const SignUpView(),
     );
   }
 }
