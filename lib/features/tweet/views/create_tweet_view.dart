@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +9,7 @@ import 'package:twitter_clone/common/rounded_small_button.dart';
 import 'package:twitter_clone/constants/assets_constants.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controllers/auth_controller.dart';
+import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_clone/theme/pallete.dart';
 
 class CreateTweetScreen extends ConsumerStatefulWidget {
@@ -21,6 +24,7 @@ class CreateTweetScreen extends ConsumerStatefulWidget {
 
 class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
   final tweetTextController = TextEditingController();
+  List<File> images = [];
 
   @override
   void dispose() {
@@ -28,9 +32,25 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
     tweetTextController.dispose();
   }
 
+  void shareTweet() {
+    ref.read(tweetControllerProvider.notifier).shareTweet(
+          images: images,
+          text: tweetTextController.text,
+          context: context,
+        );
+  }
+//The ref.read method is used to obtain a ProviderContainer 
+//from the BuildContext of the widget. This container is used to read the tweetControllerProvider provider and obtain its value.
+
+  void onPickImages() async {
+    images = await pickImages();
+    setState(() {}); // so that the build function rebuilds
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
+    final isLoading = ref.watch(tweetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,14 +65,14 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
         ),
         actions: [
           RoundedSmallButton(
-            onTap: () {},
+            onTap: shareTweet,
             label: 'Tweet',
             backgroundColor: Pallete.blueColor,
             textColor: Pallete.whiteColor,
           ),
         ],
       ),
-      body: currentUser == null
+      body: isLoading || currentUser == null
           ? const Loader()
           : SafeArea(
               child: SingleChildScrollView(
@@ -82,51 +102,71 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
                               ),
                               border: InputBorder.none,
                             ),
-                            maxLines: null, // to avoid horizontal overflow and go to next line
+                            maxLines:
+                                null, // to avoid horizontal overflow and go to next line
                           ),
                         ),
                       ],
                     ),
+                    if (images.isNotEmpty)
+                      CarouselSlider(
+                        items: images.map(
+                          (file) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: Image.file(file),
+                            );
+                          },
+                        ).toList(),
+                        options: CarouselOptions(
+                          height: 400,
+                          enableInfiniteScroll: false,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
-            bottomNavigationBar: Container(
-              padding: const EdgeInsets.only(bottom: 10),
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Pallete.greyColor,
-                    width: 0.3,
-                  )
-                )
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(bottom: 10),
+        decoration: const BoxDecoration(
+            border: Border(
+                top: BorderSide(
+          color: Pallete.greyColor,
+          width: 0.3,
+        ))),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0).copyWith(
+                left: 15,
+                right: 15,
               ),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0).copyWith(
-                      left: 15,
-                      right: 15,
-                    ),
-                    child: SvgPicture.asset(AssetsConstants.galleryIcon),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0).copyWith(
-                      left: 15,
-                      right: 15,
-                    ),
-                    child: SvgPicture.asset(AssetsConstants.gifIcon),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0).copyWith(
-                      left: 15,
-                      right: 15,
-                    ),
-                    child: SvgPicture.asset(AssetsConstants.emojiIcon),
-                  ),
-                ],
+              child: GestureDetector(
+                onTap: onPickImages,
+                child: SvgPicture.asset(AssetsConstants.galleryIcon),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0).copyWith(
+                left: 15,
+                right: 15,
+              ),
+              child: SvgPicture.asset(AssetsConstants.gifIcon),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0).copyWith(
+                left: 15,
+                right: 15,
+              ),
+              child: SvgPicture.asset(AssetsConstants.emojiIcon),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
