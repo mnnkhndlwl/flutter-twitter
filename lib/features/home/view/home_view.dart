@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar,
+      appBar: _page == 0 ?  appBar : null,
       body: IndexedStack(
         // indexed stack maintains the state
         index: _page,
