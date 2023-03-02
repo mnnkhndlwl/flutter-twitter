@@ -38,6 +38,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
           text: tweetTextController.text,
           context: context,
           repliedTo: '',
+           repliedToUserId: '',
         );
   }
 //The ref.read method is used to obtain a ProviderContainer 
