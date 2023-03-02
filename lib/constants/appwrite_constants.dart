@@ -6,6 +6,7 @@ class AppwriteConstants {
   static String usersCollection = dotenv.env['usersCollection'] ?? '';
   static String imagesBucket = dotenv.env['imageBucketId'] ?? '';
   static String tweetsCollection = dotenv.env['tweetsCollection'] ?? '';
+  static String notificationsCollection = dotenv.env['notificationCollection'] ?? '';
   static const String endPoint = 'http://192.168.0.100:8000/v1';
 
     static String imageUrl(String imageId) =>

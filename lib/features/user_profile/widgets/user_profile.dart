@@ -5,6 +5,7 @@ import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/features/auth/controllers/auth_controller.dart';
 import 'package:twitter_clone/features/tweet/widgets/tweet_card.dart';
 import 'package:twitter_clone/features/user_profile/controller/user_profile_controller.dart';
+import 'package:twitter_clone/features/user_profile/view/edit_profile_view.dart';
 import 'package:twitter_clone/features/user_profile/widgets/follow_count.dart';
 import 'package:twitter_clone/models/user_model.dart';
 import 'package:twitter_clone/theme/theme.dart';
@@ -49,7 +50,20 @@ class UserProfile extends ConsumerWidget {
                         alignment: Alignment.bottomRight,
                         margin: const EdgeInsets.all(20),
                         child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                             if (currentUser.uid == user.uid) {
+                              // edit profile
+                              Navigator.push(context, EditProfileView.route());
+                            } else {
+                              ref
+                                  .read(userProfileControllerProvider.notifier)
+                                  .followUser(
+                                    user: user,
+                                    context: context,
+                                    currentUser: currentUser,
+                                  );
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
